@@ -9,7 +9,7 @@ import ru.practicum.statsserver.entity.Stats;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface StatRepository extends JpaRepository <Stats, Long> {
+public interface StatRepository extends JpaRepository<Stats, Long> {
 
     @Query("select new ru.practicum.statsdto.StatResponseDto(s.app, s.uri, COUNT(distinct s.ip))" +
             "from Stats as s " +
