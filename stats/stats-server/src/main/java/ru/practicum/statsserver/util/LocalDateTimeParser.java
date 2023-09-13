@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeParser {
 
-    public static LocalDateTime parse(String dateTime){
+    public static LocalDateTime parse(String dateTime) {
         return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }
