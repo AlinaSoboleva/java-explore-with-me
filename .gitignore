@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/stats/stats-client/mvnw
+/stats/stats-client/mvnw.cmd
+/stats/stats-server/mvnw
+/stats/stats-server/mvnw.cmd
