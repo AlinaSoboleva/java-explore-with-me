@@ -62,8 +62,8 @@ public class Validator {
 
     public void validateEventBeforePatching(Long userId, Event event) {
         if ((!checkEventCreator(userId, event)
-                || (Objects.equals(event.getState(), State.PUBLISHED.name())))
-                || (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))) {
+                || event.getState().equals(State.PUBLISHED)
+                || (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))))) {
             throw new DataIntegrityViolationException("Данное событые недоступно для изменения");
         }
     }
