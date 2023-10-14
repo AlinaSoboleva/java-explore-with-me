@@ -34,8 +34,8 @@ public class StatsController {
                                         @RequestParam(value = "uris", required = false) List<String> uris,
                                         @RequestParam(value = "unique", defaultValue = "false") Boolean unique) {
         log.info("Получение статистики по посещениям с {}  по {}", start, end);
-        List<StatResponseDto> responseDtos = service.getStatistics(LocalDateTimeParser.parse(start),
-                LocalDateTimeParser.parse(end),
+        List<StatResponseDto> responseDtos = service.getStatistics(LocalDateTimeParser.toLDT(start),
+                LocalDateTimeParser.toLDT(end),
                 uris,
                 unique);
         log.info("Статистика полученна : {}", responseDtos);

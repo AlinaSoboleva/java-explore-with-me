@@ -4,12 +4,17 @@ import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import ru.practicum.statsdto.StatResponseDto;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BaseClient {
     protected final RestTemplate rest;
+
 
     public BaseClient(RestTemplate rest) {
         this.rest = rest;
@@ -66,5 +71,17 @@ public class BaseClient {
         }
 
         return responseBuilder.build();
+    }
+
+    protected List<StatResponseDto> getStats(String path) {
+        ResponseEntity<StatResponseDto[]> responseEntity =
+                rest.getForEntity(path, StatResponseDto[].class);
+        StatResponseDto[] statsArray = responseEntity.getBody();
+        if (statsArray == null) {
+            return Collections.emptyList();
+        } else {
+            return Arrays.stream(statsArray)
+                    .collect(Collectors.toList());
+        }
     }
 }
