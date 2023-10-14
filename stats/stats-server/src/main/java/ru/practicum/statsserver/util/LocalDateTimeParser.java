@@ -8,6 +8,7 @@ public class LocalDateTimeParser {
     public static LocalDateTime toLDT(String dateTime) {
         return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
+
     public static String toString(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
