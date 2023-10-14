@@ -1,6 +1,7 @@
 package ru.practicum.main_service.events.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -110,6 +111,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
         if (!event.getRequestModeration() || event.getParticipationLimit() == 0) {
             throw new ConflictException("Лимит заявок = 0 или отключенна пре-модерация");
+        }
+
+
+        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new DataIntegrityViolationException("Данное событые недоступно для изменения," +
+                    " так как до события осталось меньше 2х часов");
         }
 
         List<Request> requests = requestRepository.findAllByIdInAndEvent_InitiatorAndEvent_Id(requestUpdateStatusDto.getRequestIds(), user, eventId);
