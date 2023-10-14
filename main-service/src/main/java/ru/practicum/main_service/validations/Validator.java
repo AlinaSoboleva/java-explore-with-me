@@ -1,7 +1,6 @@
 package ru.practicum.main_service.validations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.categories.entity.Category;
@@ -9,7 +8,6 @@ import ru.practicum.main_service.categories.repository.CategoryRepository;
 import ru.practicum.main_service.compilations.entity.Compilation;
 import ru.practicum.main_service.compilations.repository.CompilationRepository;
 import ru.practicum.main_service.events.entity.Event;
-import ru.practicum.main_service.events.enumerations.State;
 import ru.practicum.main_service.events.repository.EventRepository;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.EntityNotFoundException;
@@ -18,7 +16,6 @@ import ru.practicum.main_service.requests.repository.RequestRepository;
 import ru.practicum.main_service.users.entity.User;
 import ru.practicum.main_service.users.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
@@ -59,20 +56,10 @@ public class Validator {
                 new EntityNotFoundException(String.format("Подборка с id %d не найдена", compId)));
     }
 
-
-    public void validateEventBeforePatching(Long userId, Event event) {
-        if ((!checkEventCreator(userId, event)
-                || (event.getState().equals(State.PUBLISHED.name())))
-                || (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))) {
-            throw new DataIntegrityViolationException("Данное событые недоступно для изменения");
-        }
-    }
-
-    public boolean checkEventCreator(Long userId, Event event) {
+    public void checkEventCreator(Long userId, Event event) {
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ConflictException(String.format("Событие с id %d не принадлежит пользователю с id %d", event.getId(), userId));
         }
-        return true;
     }
 
     public Request getRequest(Long requestId) {

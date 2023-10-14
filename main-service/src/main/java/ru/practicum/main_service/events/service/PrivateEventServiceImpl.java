@@ -106,7 +106,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public EventRequestStatusUpdateResult updateRequest(Long userId, Long eventId, EventRequestStatusUpdateRequest requestUpdateStatusDto) {
         Event event = validator.getEvent(eventId);
         User user = validator.getUser(userId);
-        validator.validateEventBeforePatching(userId, event);
+        validator.checkEventCreator(userId, event);
 
         if (!event.getRequestModeration() || event.getParticipationLimit() == 0) {
             throw new ConflictException("Лимит заявок = 0 или отключенна пре-модерация");
