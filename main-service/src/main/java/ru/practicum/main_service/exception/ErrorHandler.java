@@ -73,11 +73,12 @@ public class ErrorHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, HttpRequestMethodNotSupportedException.class, MissingServletRequestParameterException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpRequestMethodNotSupportedException.class,
+            MissingServletRequestParameterException.class, HttpMessageNotReadableException.class})
     public ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(final Exception e) {
         log.debug("Получен статус 400 BAD REQUEST: {}", e.getMessage(), e);
-        ErrorResponse response = ErrorResponse.builder().
-                status(HttpStatus.BAD_REQUEST)
+        ErrorResponse response = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
                 .reason("Incorrectly made request.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
@@ -90,8 +91,8 @@ public class ErrorHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleThrowable(final Throwable e) {
         log.debug("Получен статус 500 INTERNAL SERVER ERROR: {}", e.getMessage(), e);
-        ErrorResponse response = ErrorResponse.builder().
-                status(HttpStatus.INTERNAL_SERVER_ERROR)
+        ErrorResponse response = ErrorResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .reason("Произошла непредвиденная ошибка.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())

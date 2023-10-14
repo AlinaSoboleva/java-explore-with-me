@@ -19,10 +19,11 @@ public class AdminCategoriesController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto addCategory (@Valid @RequestBody CategoryDto categoryDto){
+    public CategoryDto addCategory(@Valid @RequestBody CategoryDto categoryDto) {
         log.info("Добавление категории администратором: {}", categoryDto);
         return adminCategoriesService.saveCategory(categoryDto);
     }
+
     @DeleteMapping("/{catId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable long catId) {
@@ -33,6 +34,6 @@ public class AdminCategoriesController {
     @PatchMapping("/{catId}")
     public CategoryDto updateCategory(@PathVariable long catId, @RequestBody @Valid CategoryDto categoryDto) {
         log.info("Изменение администратором категории c id {}, новое значение {}", catId, categoryDto);
-        return  adminCategoriesService.updateCategory(catId, categoryDto);
+        return adminCategoriesService.updateCategory(catId, categoryDto);
     }
 }
