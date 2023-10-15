@@ -101,7 +101,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                     throw new RuntimeException("Неверное значение state action:  " + eventUserRequest.getStateAction());
             }
         }
-        eventRepository.save(event);
         return eventMapper.toFullDto(event);
     }
 
@@ -163,8 +162,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
 
         event.setConfirmedRequests(confirmedRequests);
-        //   eventRepository.save(event);
-        //   requestRepository.saveAll(requests);
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
         result.setConfirmedRequests(confirmed.stream().map(RequestMapper::toDto).collect(Collectors.toList()));
         result.setRejectedRequests(rejected.stream().map(RequestMapper::toDto).collect(Collectors.toList()));
