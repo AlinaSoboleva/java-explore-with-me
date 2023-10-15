@@ -3,6 +3,7 @@ package ru.practicum.main_service.events.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import static ru.practicum.main_service.util.Constants.FORMATTER_FOR_DATETIME;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@PropertySource("classpath:application.properties")
 public class PublicEventServiceImpl implements PublicEventService {
     private final EventRepository eventRepository;
 
@@ -106,7 +108,7 @@ public class PublicEventServiceImpl implements PublicEventService {
             throw new EntityNotFoundException("Событие должно быть опубликованно");
         }
         StatRequestDto statRequestDto = new StatRequestDto();
-        statRequestDto.setApp("${app.name}");
+        statRequestDto.setApp(appName);
         statRequestDto.setIp(request.getRemoteAddr());
         statRequestDto.setUri(request.getRequestURI());
         statRequestDto.setTimestamp(LocalDateTime.now().format(FORMATTER_FOR_DATETIME));
