@@ -2,6 +2,7 @@ package ru.practicum.main_service.events.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,11 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     private final StatsService statsService;
 
+    private final EventMapper eventMapper;
+
+    @Value("${app.name}")
+    private String appName;
+
     public List<EventShortDto> getAllEvents(String text,
                                             List<Long> categories,
                                             Boolean paid,
@@ -48,8 +54,9 @@ public class PublicEventServiceImpl implements PublicEventService {
                                             Sort sort,
                                             int from,
                                             int size, HttpServletRequest request) {
+        checkDates(start, end);
         StatRequestDto statRequestDto = new StatRequestDto();
-        statRequestDto.setApp("${app.name}");
+        statRequestDto.setApp(appName);
         statRequestDto.setUri(request.getRequestURI());
         statRequestDto.setIp(request.getRemoteAddr());
         statRequestDto.setTimestamp(LocalDateTime.now().format(FORMATTER_FOR_DATETIME));
@@ -77,7 +84,7 @@ public class PublicEventServiceImpl implements PublicEventService {
             }
         }
         Map<Long, Long> views = statsService.returnMapViewStats(events, start, end);
-        List<EventShortDto> eventShortDtos = events.stream().map(EventMapper::toDto).collect(Collectors.toList());
+        List<EventShortDto> eventShortDtos = events.stream().map(eventMapper::toDto).collect(Collectors.toList());
 
         eventShortDtos.stream()
                 .peek(dto -> dto.setConfirmedRequests(
@@ -115,10 +122,16 @@ public class PublicEventServiceImpl implements PublicEventService {
             throw new RuntimeException(e);
         }
 
-        EventFullDto eventFullDto = EventMapper.toFullDto(event);
+        EventFullDto eventFullDto = eventMapper.toFullDto(event);
         eventFullDto.setConfirmedRequests(requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED));
         eventFullDto.setViews(viewStats.isEmpty() ? 0L : viewStats.get(0).getHits());
 
         return eventFullDto;
+    }
+
+    private void checkDates(LocalDateTime start, LocalDateTime end) {
+        if (start != null && end != null && (start.isAfter(LocalDateTime.now()) || start.isAfter(end))) {
+            throw new MainServerException(String.format("Неверные параметны даты, start : %s, end: %s", start, end));
+        }
     }
 }

@@ -9,7 +9,6 @@ import ru.practicum.main_service.events.dto.EventFullDto;
 import ru.practicum.main_service.events.dto.EventShortDto;
 import ru.practicum.main_service.events.enumerations.Sort;
 import ru.practicum.main_service.events.service.PublicEventService;
-import ru.practicum.main_service.exception.MainServerException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
@@ -39,7 +38,6 @@ public class PublicEventController {
                                                @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                @Positive @RequestParam(defaultValue = "10") Integer size,
                                                HttpServletRequest request) {
-        checkDates(rangeStart, rangeEnd);
         log.info("Получение событий с возможностью фильтрации");
         return eventService
                 .getAllEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, Sort.valueOf(sort), from, size, request);
@@ -52,9 +50,4 @@ public class PublicEventController {
     }
 
 
-    private void checkDates(LocalDateTime start, LocalDateTime end) {
-        if (start != null && end != null && (start.isAfter(LocalDateTime.now()) || start.isAfter(end))) {
-            throw new MainServerException(String.format("Неверные параметны даты, start : %s, end: %s", start, end));
-        }
-    }
 }

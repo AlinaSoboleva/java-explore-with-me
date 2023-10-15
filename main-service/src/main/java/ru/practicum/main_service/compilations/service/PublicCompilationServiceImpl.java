@@ -11,7 +11,7 @@ import ru.practicum.main_service.compilations.mapper.CompilationMapper;
 import ru.practicum.main_service.compilations.repository.CompilationRepository;
 import ru.practicum.main_service.events.entity.Event;
 import ru.practicum.main_service.events.repository.EventRepository;
-import ru.practicum.main_service.validations.Validator;
+import ru.practicum.main_service.provider.GetEntityProvider;
 
 import java.util.List;
 import java.util.Set;
@@ -26,7 +26,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     private final EventRepository eventRepository;
 
-    private final Validator validator;
+    private final GetEntityProvider getEntityProvider;
 
     @Override
     public List<CompilationDto> findAllCompilation(boolean pinned, int from, int size) {
@@ -37,7 +37,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     @Override
     public CompilationDto getById(Long compId) {
-        Compilation compilation = validator.getCompilation(compId);
+        Compilation compilation = getEntityProvider.getCompilation(compId);
         Set<Event> events = eventRepository.findAllByCompilation_Id(compId);
         compilation.setEvents(events);
         return CompilationMapper.toDto(compilation);

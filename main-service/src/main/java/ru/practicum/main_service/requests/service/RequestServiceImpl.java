@@ -10,13 +10,13 @@ import ru.practicum.main_service.events.repository.EventRepository;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.EntityNotFoundException;
 import ru.practicum.main_service.exception.MainServerException;
+import ru.practicum.main_service.provider.GetEntityProvider;
 import ru.practicum.main_service.requests.dto.RequestDto;
 import ru.practicum.main_service.requests.entity.Request;
 import ru.practicum.main_service.requests.entity.RequestStatus;
 import ru.practicum.main_service.requests.mapper.RequestMapper;
 import ru.practicum.main_service.requests.repository.RequestRepository;
 import ru.practicum.main_service.users.entity.User;
-import ru.practicum.main_service.validations.Validator;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -31,12 +31,12 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
 
     private final EventRepository eventRepository;
-    private final Validator validator;
+    private final GetEntityProvider getEntityProvider;
 
     @Transactional(readOnly = true)
     @Override
     public List<RequestDto> findAllByRequester(Long userId) {
-        validator.getUser(userId);
+        getEntityProvider.getUser(userId);
         List<Request> requests = requestRepository.findAllByRequester_Id(userId);
         if (requests.isEmpty()) {
             return Collections.emptyList();
@@ -48,8 +48,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestDto cancelRequest(Long userId, Long requestId) {
-        validator.getUser(userId);
-        Request request = validator.getRequest(requestId);
+        getEntityProvider.getUser(userId);
+        Request request = getEntityProvider.getRequest(requestId);
         if (!request.getRequester().getId().equals(userId)) {
             throw new EntityNotFoundException(String.format("Можно отменить только свой запрос на участие, " +
                     "userId = %s, requestId = %s.", userId, requestId));
@@ -62,8 +62,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestDto create(Long userId, Long eventId) {
-        User user = validator.getUser(userId);
-        Event event = validator.getEvent(eventId);
+        User user = getEntityProvider.getUser(userId);
+        Event event = getEntityProvider.getEvent(eventId);
 
         if (event.getInitiator().equals(user)) {
             throw new ConflictException("Пользователь является создателем события");

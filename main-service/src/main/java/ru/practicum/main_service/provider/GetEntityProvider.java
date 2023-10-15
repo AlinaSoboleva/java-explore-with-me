@@ -1,4 +1,4 @@
-package ru.practicum.main_service.validations;
+package ru.practicum.main_service.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class Validator {
+public class GetEntityProvider {
 
     private final UserRepository userRepository;
 

@@ -12,10 +12,10 @@ import ru.practicum.main_service.events.mapper.EventMapper;
 import ru.practicum.main_service.events.repository.EventRepository;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.MainServerException;
+import ru.practicum.main_service.provider.GetEntityProvider;
 import ru.practicum.main_service.requests.entity.RequestStatus;
 import ru.practicum.main_service.requests.repository.RequestRepository;
 import ru.practicum.main_service.statistic.StatsService;
-import ru.practicum.main_service.validations.Validator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,12 +31,14 @@ import static ru.practicum.main_service.events.enumerations.State.PUBLISHED;
 @Transactional
 public class AdminEventServiceImpl implements AdminEventService {
 
-    private final Validator validator;
+    private final GetEntityProvider getEntityProvider;
     private final EventRepository eventRepository;
 
     private final RequestRepository requestRepository;
 
     private final StatsService statsService;
+
+    private final EventMapper eventMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 
         List<Event> events = eventRepository.getEventsByParameters(users, states, categories, rangeStart, rangeEnd, page);
 
-        List<EventFullDto> eventFullDtos = events.stream().map(EventMapper::toFullDto).collect(Collectors.toList());
+        List<EventFullDto> eventFullDtos = events.stream().map(eventMapper::toFullDto).collect(Collectors.toList());
         Map<Long, Long> views = statsService.returnMapViewStats(events, rangeStart, rangeEnd);
         eventFullDtos = eventFullDtos.stream()
                 .peek(dto -> dto.setConfirmedRequests(
@@ -65,7 +67,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (updatedEvent.getEventDate() != null && updatedEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new MainServerException(String.format("Дата начала изменяемого события должна быть не ранее чем за час от даты публикации %s", updatedEvent.getEventDate()));
         }
-        Event event = validator.getEvent(eventId);
+        Event event = getEntityProvider.getEvent(eventId);
         if (updatedEvent.getStateAction() != null) {
             if (!event.getState().equals(State.PENDING)) {
                 throw new ConflictException(String.format("Событие должно быть в состоянии ожидания публикации %d", eventId));
@@ -84,7 +86,7 @@ public class AdminEventServiceImpl implements AdminEventService {
             }
         }
         updateEventValues(event, updatedEvent);
-        return EventMapper.toFullDto(eventRepository.save(event));
+        return eventMapper.toFullDto(eventRepository.save(event));
     }
 
     private void updateEventValues(Event event, UpdatedEventAdminRequest request) {

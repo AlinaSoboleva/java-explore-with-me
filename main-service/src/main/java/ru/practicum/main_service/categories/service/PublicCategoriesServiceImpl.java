@@ -8,7 +8,7 @@ import ru.practicum.main_service.categories.dto.CategoryDto;
 import ru.practicum.main_service.categories.entity.Category;
 import ru.practicum.main_service.categories.mapper.CategoryMapper;
 import ru.practicum.main_service.categories.repository.CategoryRepository;
-import ru.practicum.main_service.validations.Validator;
+import ru.practicum.main_service.provider.GetEntityProvider;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ public class PublicCategoriesServiceImpl implements PublicCategoriesService {
 
     private final CategoryRepository repository;
 
-    private final Validator validator;
+    private final GetEntityProvider getEntityProvider;
 
     @Override
     public List<CategoryDto> findAll(int from, int size) {
@@ -34,7 +34,7 @@ public class PublicCategoriesServiceImpl implements PublicCategoriesService {
 
     @Override
     public CategoryDto getCategoryById(Long id) {
-        Category category = validator.getCategory(id);
+        Category category = getEntityProvider.getCategory(id);
         return CategoryMapper.toDto(category);
     }
 }

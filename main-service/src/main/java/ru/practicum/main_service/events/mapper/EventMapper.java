@@ -1,6 +1,6 @@
 package ru.practicum.main_service.events.mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.main_service.categories.entity.Category;
 import ru.practicum.main_service.categories.mapper.CategoryMapper;
@@ -11,8 +11,8 @@ import ru.practicum.main_service.events.dto.UpdateEventUserRequest;
 import ru.practicum.main_service.events.entity.Event;
 import ru.practicum.main_service.events.entity.Location;
 import ru.practicum.main_service.events.enumerations.State;
+import ru.practicum.main_service.provider.GetEntityProvider;
 import ru.practicum.main_service.users.mapper.UserMapper;
-import ru.practicum.main_service.validations.Validator;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,12 +20,12 @@ import java.time.format.DateTimeFormatter;
 import static ru.practicum.main_service.util.Constants.PATTERN_FOR_DATETIME;
 
 @Component
+@RequiredArgsConstructor
 public class EventMapper {
 
-    @Autowired
-    private static Validator validator;
+    private final GetEntityProvider getEntityProvider;
 
-    public static Event toEntity(NewEventDto newEventDto) {
+    public Event toEntity(NewEventDto newEventDto) {
         Event event = new Event();
         event.setAnnotation(newEventDto.getAnnotation());
         event.setDescription(newEventDto.getDescription());
@@ -41,7 +41,7 @@ public class EventMapper {
         return event;
     }
 
-    public static EventShortDto toDto(Event event) {
+    public EventShortDto toDto(Event event) {
         if (event == null) return null;
 
         return EventShortDto.builder()
@@ -56,7 +56,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventFullDto toFullDto(Event event) {
+    public EventFullDto toFullDto(Event event) {
         if (event == null) return null;
 
         return EventFullDto.builder()
@@ -78,7 +78,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static Event toUpdatedEntity(UpdateEventUserRequest request, Event event) {
+    public Event toUpdatedEntity(UpdateEventUserRequest request, Event event) {
         updateAnnotation(event, request.getAnnotation());
         updateCategory(event, request.getCategory());
         updateDescription(event, request.getDescription());
@@ -91,32 +91,32 @@ public class EventMapper {
         return event;
     }
 
-    private static void updateAnnotation(Event event, String newAnnotation) {
+    private void updateAnnotation(Event event, String newAnnotation) {
         if (newAnnotation != null) {
             event.setAnnotation(newAnnotation);
         }
     }
 
-    private static void updateCategory(Event event, Long categoryId) {
+    private void updateCategory(Event event, Long categoryId) {
         if (categoryId != null) {
-            Category category = validator.getCategory(categoryId);
+            Category category = getEntityProvider.getCategory(categoryId);
             event.setCategory(category);
         }
     }
 
-    private static void updateDescription(Event event, String newDescription) {
+    private void updateDescription(Event event, String newDescription) {
         if (newDescription != null) {
             event.setDescription(newDescription);
         }
     }
 
-    private static void updateEventDate(Event event, LocalDateTime newDate) {
+    private void updateEventDate(Event event, LocalDateTime newDate) {
         if (newDate != null) {
             event.setEventDate(newDate);
         }
     }
 
-    private static void updateLocation(Event event, Location location) {
+    private void updateLocation(Event event, Location location) {
         if (location != null) {
             event.setLocation(Location.builder()
                     .lat(location.getLat())
@@ -125,25 +125,25 @@ public class EventMapper {
         }
     }
 
-    private static void updatePaid(Event event, Boolean paid) {
+    private void updatePaid(Event event, Boolean paid) {
         if (paid != null) {
             event.setPaid(paid);
         }
     }
 
-    private static void updateParticipationLimit(Event event, Long participationLimit) {
+    private void updateParticipationLimit(Event event, Long participationLimit) {
         if (participationLimit != null) {
             event.setParticipationLimit(participationLimit);
         }
     }
 
-    private static void updateRequestModeration(Event event, Boolean requestModeration) {
+    private void updateRequestModeration(Event event, Boolean requestModeration) {
         if (requestModeration != null) {
             event.setRequestModeration(requestModeration);
         }
     }
 
-    private static void updateTitle(Event event, String newTitle) {
+    private void updateTitle(Event event, String newTitle) {
         if (newTitle != null) {
             event.setTitle(newTitle);
         }

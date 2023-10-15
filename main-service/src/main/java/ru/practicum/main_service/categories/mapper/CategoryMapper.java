@@ -9,7 +9,7 @@ public class CategoryMapper {
         if (categoryDto == null) return null;
 
         Category category = new Category();
-        category.setId(categoryDto.getId() == null ? null : categoryDto.getId());
+        category.setId(categoryDto.getId());
         category.setName(categoryDto.getName());
 
         return category;

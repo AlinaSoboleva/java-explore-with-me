@@ -7,7 +7,7 @@ import ru.practicum.main_service.categories.dto.CategoryDto;
 import ru.practicum.main_service.categories.entity.Category;
 import ru.practicum.main_service.categories.mapper.CategoryMapper;
 import ru.practicum.main_service.categories.repository.CategoryRepository;
-import ru.practicum.main_service.validations.Validator;
+import ru.practicum.main_service.provider.GetEntityProvider;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
 
     private final CategoryRepository categoryRepository;
 
-    private final Validator validator;
+    private final GetEntityProvider getEntityProvider;
 
     @Override
     public CategoryDto saveCategory(CategoryDto categoryDto) {
@@ -31,9 +31,8 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
 
     @Override
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
-        Category category = validator.getCategory(catId);
+        Category category = getEntityProvider.getCategory(catId);
         category.setName(categoryDto.getName());
-        categoryRepository.save(category);
         return CategoryMapper.toDto(category);
     }
 }
