@@ -27,9 +27,11 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     private final GetEntityProvider getEntityProvider;
 
+    private final CompilationMapper compilationMapper;
+
     @Override
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
-        Compilation compilation = CompilationMapper.toEntity(newCompilationDto);
+        Compilation compilation = compilationMapper.toEntity(newCompilationDto);
         Set<Event> events = Collections.emptySet();
         if (newCompilationDto.getEvents() != null) {
             events = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
@@ -37,7 +39,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         compilation.setEvents(events);
 
         compilation = compilationRepository.save(compilation);
-        return CompilationMapper.toDto(compilation);
+        return compilationMapper.toDto(compilation);
     }
 
     @Override
@@ -59,6 +61,6 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         }
         compilation.setPinned(request.getPinned() != null ? request.getPinned() : compilation.getPinned());
 
-        return CompilationMapper.toDto(compilation);
+        return compilationMapper.toDto(compilation);
     }
 }

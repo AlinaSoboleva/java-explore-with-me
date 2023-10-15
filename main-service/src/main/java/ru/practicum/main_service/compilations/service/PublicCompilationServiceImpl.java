@@ -28,11 +28,13 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     private final GetEntityProvider getEntityProvider;
 
+    private final CompilationMapper compilationMapper;
+
     @Override
     public List<CompilationDto> findAllCompilation(boolean pinned, int from, int size) {
         Pageable page = PageRequest.of(from, size);
         List<Compilation> compilations = compilationRepository.findAllByPinned(pinned, page);
-        return compilations.stream().map(CompilationMapper::toDto).collect(Collectors.toList());
+        return compilations.stream().map(compilationMapper::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -40,6 +42,6 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
         Compilation compilation = getEntityProvider.getCompilation(compId);
         Set<Event> events = eventRepository.findAllByCompilation_Id(compId);
         compilation.setEvents(events);
-        return CompilationMapper.toDto(compilation);
+        return compilationMapper.toDto(compilation);
     }
 }
