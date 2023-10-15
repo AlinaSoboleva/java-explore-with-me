@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 public class CompilationMapper {
 
     private final EventMapper eventMapper;
-    public  Compilation toEntity(NewCompilationDto newCompilationDto) {
+
+    public Compilation toEntity(NewCompilationDto newCompilationDto) {
         Compilation compilation = new Compilation();
         compilation.setTitle(newCompilationDto.getTitle());
         compilation.setPinned(newCompilationDto.getPinned() != null ? newCompilationDto.getPinned() : false);
@@ -22,7 +23,7 @@ public class CompilationMapper {
         return compilation;
     }
 
-    public  CompilationDto toDto(Compilation compilation) {
+    public CompilationDto toDto(Compilation compilation) {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())
