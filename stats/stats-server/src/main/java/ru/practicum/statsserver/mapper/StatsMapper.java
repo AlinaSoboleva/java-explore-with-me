@@ -13,7 +13,7 @@ public class StatsMapper {
         stats.setApp(statRequestDto.getApp());
         stats.setIp(statRequestDto.getIp());
         stats.setUri(statRequestDto.getUri());
-        stats.setTimestamp(LocalDateTimeParser.parse(statRequestDto.getTimestamp()));
+        stats.setTimestamp(LocalDateTimeParser.toLDT(statRequestDto.getTimestamp()));
 
         return stats;
     }

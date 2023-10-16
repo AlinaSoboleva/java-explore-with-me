@@ -1,6 +1,7 @@
 package ru.practicum.statsserver.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.statsdto.StatRequestDto;
@@ -26,6 +27,8 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatResponseDto> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (start.isAfter(end))
+            throw new DataIntegrityViolationException("Неверные значения даты start: " + start + " end: " + end);
         if (unique) {
             return statRepository.findAllUnique(start, end, uris);
         }
