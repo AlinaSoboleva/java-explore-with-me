@@ -4,6 +4,9 @@ import lombok.*;
 import ru.practicum.main_service.users.entity.User;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 @Entity
@@ -33,5 +36,14 @@ public class Likes implements Serializable {
         @JoinColumn(name = "user_id", nullable = false)
         private User userId;
 
+        private void writeObject(ObjectOutputStream stream)
+                throws IOException {
+            stream.defaultWriteObject();
+        }
+
+        private void readObject(ObjectInputStream stream)
+                throws IOException, ClassNotFoundException {
+            stream.defaultReadObject();
+        }
     }
 }
