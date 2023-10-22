@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.events.dto.EventFullDto;
 import ru.practicum.main_service.events.dto.UpdatedEventAdminRequest;
 import ru.practicum.main_service.events.entity.Event;
+import ru.practicum.main_service.events.enumerations.RatingSort;
 import ru.practicum.main_service.events.enumerations.State;
 import ru.practicum.main_service.events.mapper.EventMapper;
 import ru.practicum.main_service.events.repository.EventRepository;
@@ -42,7 +43,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventFullDto> getAllEventsByAdmin(List<Long> users, List<State> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public List<EventFullDto> getAllEventsByAdmin(List<Long> users, List<State> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size, String ratingSort) {
 
         PageRequest page = PageRequest.of(from, size);
 
@@ -59,7 +60,7 @@ public class AdminEventServiceImpl implements AdminEventService {
                 .peek(dto -> dto.setViews(views.getOrDefault(dto.getId(), 0L)))
                 .collect(Collectors.toList());
 
-        return eventFullDtos;
+        return sortByRatingSort(ratingSort, eventFullDtos);
     }
 
     @Override
@@ -98,5 +99,21 @@ public class AdminEventServiceImpl implements AdminEventService {
         event.setParticipationLimit(request.getParticipantLimit() == null ? event.getParticipationLimit() : request.getParticipantLimit());
         event.setRequestModeration(request.getRequestModeration() == null ? event.getRequestModeration() : request.getRequestModeration());
         event.setTitle(request.getTitle() == null ? event.getTitle() : request.getTitle());
+    }
+
+    private List<EventFullDto> sortByRatingSort(String ratingSort, List<EventFullDto> eventFullDtos) {
+        if (ratingSort == null) return eventFullDtos;
+
+        switch (RatingSort.valueOf(ratingSort)) {
+            case ASC:
+                eventFullDtos.sort((e1, e2) -> (int) (e1.getRating() - e2.getRating()));
+                break;
+            case DESC:
+                eventFullDtos.sort((e1, e2) -> (int) (e2.getRating() - e1.getRating()));
+                break;
+            default:
+                throw new MainServerException("Неверное значение параметра ratingSort " + ratingSort);
+        }
+        return eventFullDtos;
     }
 }

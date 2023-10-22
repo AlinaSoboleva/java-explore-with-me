@@ -23,12 +23,27 @@ public class PrivateEventController {
 
     private final PrivateEventService privateEventService;
 
+    @PutMapping("/{eventId}/like")
+    public EventShortDto putLike(@PathVariable Long eventId,
+                                 @PathVariable Long userId) {
+        log.info("Получен запрос на лайк от пользователя с id " + userId + " для события с id " + eventId);
+        return privateEventService.putLike(eventId, userId, true);
+    }
+
+    @PutMapping("/{eventId}/dislike")
+    public EventShortDto putDislike(@PathVariable Long eventId,
+                                    @PathVariable Long userId) {
+        log.info("Получен запрос на дизлайк от пользователя с id " + userId + " для события с id " + eventId);
+        return privateEventService.putLike(eventId, userId, false);
+    }
+
     @GetMapping
     public List<EventShortDto> getUserEvents(@PathVariable Long userId,
                                              @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                             @RequestParam(defaultValue = "10") @Positive int size) {
+                                             @RequestParam(defaultValue = "10") @Positive int size,
+                                             @RequestParam(required = false) String ratingSort) {
         log.info("Получение списка событий пользователя с id {}", userId);
-        return privateEventService.findAll(userId, from, size);
+        return privateEventService.findAll(userId, from, size, ratingSort);
     }
 
     @GetMapping("/{eventId}")

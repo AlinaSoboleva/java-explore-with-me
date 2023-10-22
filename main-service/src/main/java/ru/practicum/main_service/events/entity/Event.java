@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "events")
 public class Event {
@@ -27,6 +28,7 @@ public class Event {
 
     private String description;
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -59,5 +61,9 @@ public class Event {
     private String title;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "compilation_id")
+    @EqualsAndHashCode.Exclude
     private Compilation compilation;
+
+    private Long rating;
+
 }

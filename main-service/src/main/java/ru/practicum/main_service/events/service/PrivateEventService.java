@@ -6,7 +6,7 @@ import ru.practicum.main_service.requests.dto.RequestDto;
 import java.util.List;
 
 public interface PrivateEventService {
-    List<EventShortDto> findAll(Long userId, int from, int size);
+    List<EventShortDto> findAll(Long userId, int from, int size, String ratingSort);
 
     EventFullDto addEvent(Long userId, NewEventDto newEventDto);
 
@@ -17,4 +17,6 @@ public interface PrivateEventService {
     EventFullDto getUserEvent(Long userId, Long eventId);
 
     List<RequestDto> getRequestsInfo(Long userId, Long eventId);
+
+    EventShortDto putLike(Long eventId, Long userId, Boolean positive);
 }

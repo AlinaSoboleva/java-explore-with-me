@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.categories.entity.Category;
 import ru.practicum.main_service.events.dto.*;
 import ru.practicum.main_service.events.entity.Event;
+import ru.practicum.main_service.events.entity.Likes;
 import ru.practicum.main_service.events.enumerations.State;
 import ru.practicum.main_service.events.mapper.EventMapper;
 import ru.practicum.main_service.events.repository.EventRepository;
+import ru.practicum.main_service.events.repository.LikesRepository;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.MainServerException;
 import ru.practicum.main_service.provider.GetEntityProvider;
@@ -35,16 +37,37 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
 
     private final RequestRepository requestRepository;
+
+    private final LikesRepository likesRepository;
+
     private final GetEntityProvider getEntityProvider;
 
     private final EventMapper eventMapper;
 
+    public EventShortDto putLike(Long eventId, Long userId, Boolean positive) {
+        Event event = checkEvent(eventId);
+        User user = getEntityProvider.getUser(userId);
+        User initiator = event.getInitiator();
+        Likes.Key key = new Likes.Key(event, user);
+        Likes likes = getEntityProvider.getLike(key);
+
+        if (likes != null) {
+            Boolean isLike = likes.getPositive();
+            deleteLike(likes.getKey(), isLike, event, initiator);
+            return eventMapper.toDto(event);
+        }
+
+        likesRepository.save(createLikeOrDislike(event, key, positive, initiator));
+        return eventMapper.toDto(event);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public List<EventShortDto> findAll(Long userId, int from, int size) {
+    public List<EventShortDto> findAll(Long userId, int from, int size, String ratingSort) {
         User user = getEntityProvider.getUser(userId);
         Pageable pageable = PageRequest.of(from / size, size);
-        return eventRepository.findByInitiator(user, pageable).stream().map(eventMapper::toDto).collect(Collectors.toList());
+        List<EventShortDto> eventShortDtos = eventRepository.findByInitiator(user, pageable).stream().map(eventMapper::toDto).collect(Collectors.toList());
+        return PublicEventServiceImpl.sortByRatingSort(ratingSort, eventShortDtos);
     }
 
     @Override
@@ -167,5 +190,45 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         result.setRejectedRequests(rejected.stream().map(RequestMapper::toDto).collect(Collectors.toList()));
 
         return result;
+    }
+
+    private Event checkEvent(Long eventId) {
+        Event event = getEntityProvider.getEvent(eventId);
+
+        if (!event.getState().equals(State.PUBLISHED)) {
+            throw new ConflictException("Невозможно оценить не опубликованное событие");
+        }
+        return event;
+    }
+
+    private Likes createLikeOrDislike(Event event, Likes.Key key, Boolean positive, User initiator) {
+        Likes likes = new Likes();
+        likes.setPositive(positive);
+        likes.setKey(key);
+        if (positive) {
+            addRating(event, initiator);
+        } else {
+            reduceRating(event, initiator);
+        }
+        return likes;
+    }
+
+    private void deleteLike(Likes.Key key, Boolean isLike, Event event, User initiator) {
+        likesRepository.deleteLikesByKey(key);
+        if (isLike) {
+            reduceRating(event, initiator);
+        } else {
+            addRating(event, initiator);
+        }
+    }
+
+    private void addRating(Event event, User initiator) {
+        event.setRating(event.getRating() + 1);
+        initiator.setRating(initiator.getRating() + 1);
+    }
+
+    private void reduceRating(Event event, User initiator) {
+        event.setRating(event.getRating() - 1);
+        initiator.setRating(initiator.getRating() - 1);
     }
 }

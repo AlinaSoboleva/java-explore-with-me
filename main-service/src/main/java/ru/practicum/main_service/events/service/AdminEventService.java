@@ -12,5 +12,5 @@ public interface AdminEventService {
 
     List<EventFullDto> getAllEventsByAdmin(
             List<Long> users, List<State> states, List<Long> categories,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
+            LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size, String ratingSort);
 }

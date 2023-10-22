@@ -37,6 +37,7 @@ public class EventMapper {
         event.setRequestModeration(newEventDto.getRequestModeration() == null || newEventDto.getRequestModeration());
         event.setPaid(newEventDto.getPaid() != null && newEventDto.getPaid());
         event.setParticipationLimit(newEventDto.getParticipantLimit() == null ? 0L : newEventDto.getParticipantLimit());
+        event.setRating(0L);
 
         return event;
     }
@@ -53,6 +54,7 @@ public class EventMapper {
                 .category(CategoryMapper.toDto(event.getCategory()))
                 .confirmedRequests(event.getConfirmedRequests())
                 .initiator(UserMapper.toShortDto(event.getInitiator()))
+                .rating(event.getRating())
                 .build();
     }
 
@@ -75,6 +77,7 @@ public class EventMapper {
                 .participantLimit(event.getParticipationLimit())
                 .paid(event.getPaid())
                 .confirmedRequests(event.getConfirmedRequests())
+                .rating(event.getRating())
                 .build();
     }
 
@@ -88,6 +91,7 @@ public class EventMapper {
         updateParticipationLimit(event, request.getParticipantLimit());
         updateRequestModeration(event, request.getRequestModeration());
         updateTitle(event, request.getTitle());
+        event.setRating(event.getRating());
         return event;
     }
 
