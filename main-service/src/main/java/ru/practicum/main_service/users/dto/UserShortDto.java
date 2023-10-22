@@ -10,4 +10,6 @@ import lombok.ToString;
 public class UserShortDto {
     private Long id;
     private String name;
+
+    private Long rating;
 }

@@ -8,7 +8,9 @@ import ru.practicum.main_service.categories.repository.CategoryRepository;
 import ru.practicum.main_service.compilations.entity.Compilation;
 import ru.practicum.main_service.compilations.repository.CompilationRepository;
 import ru.practicum.main_service.events.entity.Event;
+import ru.practicum.main_service.events.entity.Likes;
 import ru.practicum.main_service.events.repository.EventRepository;
+import ru.practicum.main_service.events.repository.LikesRepository;
 import ru.practicum.main_service.exception.ConflictException;
 import ru.practicum.main_service.exception.EntityNotFoundException;
 import ru.practicum.main_service.requests.entity.Request;
@@ -33,9 +35,15 @@ public class GetEntityProvider {
 
     private final CompilationRepository compilationRepository;
 
+    private final LikesRepository likesRepository;
+
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId)));
+    }
+
+    public Likes getLike(Likes.Key key){
+        return likesRepository.findLikesByKey(key);
     }
 
     public Event getEvent(Long eventId) {

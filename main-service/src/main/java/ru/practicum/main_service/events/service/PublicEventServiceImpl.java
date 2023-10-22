@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.events.dto.EventFullDto;
 import ru.practicum.main_service.events.dto.EventShortDto;
 import ru.practicum.main_service.events.entity.Event;
+import ru.practicum.main_service.events.enumerations.RatingSort;
 import ru.practicum.main_service.events.enumerations.Sort;
 import ru.practicum.main_service.events.enumerations.State;
 import ru.practicum.main_service.events.mapper.EventMapper;
@@ -55,7 +56,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                                             boolean onlyAvailable,
                                             Sort sort,
                                             int from,
-                                            int size, HttpServletRequest request) {
+                                            int size, HttpServletRequest request, String ratingSort) {
         checkDates(start, end);
         StatRequestDto statRequestDto = new StatRequestDto();
         statRequestDto.setApp(appName);
@@ -98,7 +99,8 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (sort.equals(Sort.VIEWS)) {
             eventShortDtos.sort((e1, e2) -> (int) (e2.getViews() - e1.getViews()));
         }
-        return eventShortDtos;
+
+        return sortByRatingSort(ratingSort, eventShortDtos);
     }
 
     @Override
@@ -129,6 +131,20 @@ public class PublicEventServiceImpl implements PublicEventService {
         eventFullDto.setViews(viewStats.isEmpty() ? 0L : viewStats.get(0).getHits());
 
         return eventFullDto;
+    }
+
+    protected static List<EventShortDto> sortByRatingSort(String ratingSort, List<EventShortDto> eventShortDtos) {
+        if (ratingSort == null) return eventShortDtos;
+
+        switch (RatingSort.valueOf(ratingSort)) {
+            case ASC:
+                eventShortDtos.sort((e1, e2) -> (int) (e1.getRating() - e2.getRating()));
+                break;
+            case DESC:
+                eventShortDtos.sort((e1, e2) -> (int) (e2.getRating() - e1.getRating()));
+                break;
+        }
+        return eventShortDtos;
     }
 
     private void checkDates(LocalDateTime start, LocalDateTime end) {

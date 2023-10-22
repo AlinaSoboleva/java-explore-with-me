@@ -37,10 +37,11 @@ public class PublicEventController {
                                                @RequestParam(required = false, defaultValue = "VIEWS") String sort,
                                                @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                @Positive @RequestParam(defaultValue = "10") Integer size,
+                                               @RequestParam(required = false) String ratingSort,
                                                HttpServletRequest request) {
         log.info("Получение событий с возможностью фильтрации");
         return eventService
-                .getAllEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, Sort.valueOf(sort), from, size, request);
+                .getAllEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, Sort.valueOf(sort), from, size, request, ratingSort);
     }
 
     @GetMapping("/{id}")

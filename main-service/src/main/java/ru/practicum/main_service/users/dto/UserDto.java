@@ -21,4 +21,5 @@ public class UserDto {
     @Size(min = 2, max = 250)
     private String name;
 
+    private Long rating;
 }

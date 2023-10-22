@@ -42,7 +42,20 @@ public class ErrorHandler {
 
         log.warn(errorResponse.toString());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.debug("Получен статус 400 BAD REQUEST: {}", e.getMessage(), e);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .reason("Incorrectly made request.")
+                .message(e.getMessage())
+                .status(HttpStatus.BAD_REQUEST)
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        log.warn(errorResponse.toString());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConflictException.class)

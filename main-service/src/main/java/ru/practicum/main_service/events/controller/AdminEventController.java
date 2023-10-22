@@ -41,9 +41,10 @@ public class AdminEventController {
                                         @RequestParam(required = false) List<Long> categories,
                                         @RequestParam(required = false) @DateTimeFormat(pattern = PATTERN_FOR_DATETIME) LocalDateTime rangeStart,
                                         @RequestParam(required = false) @DateTimeFormat(pattern = PATTERN_FOR_DATETIME) LocalDateTime rangeEnd,
+                                        @RequestParam(required = false) String ratingSort,
                                         @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
                                         @RequestParam(value = "size", defaultValue = "10") @Positive int size) {
         log.info("Получение списка событий администратором");
-        return adminEventService.getAllEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
+        return adminEventService.getAllEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size, ratingSort);
     }
 }

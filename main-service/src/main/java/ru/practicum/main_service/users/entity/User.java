@@ -9,6 +9,7 @@ import javax.persistence.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,4 +20,6 @@ public class User {
     private String email;
 
     private String name;
+
+    private Long rating;
 }
