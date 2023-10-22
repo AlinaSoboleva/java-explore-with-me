@@ -42,7 +42,7 @@ public class GetEntityProvider {
                 new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId)));
     }
 
-    public Likes getLike(Likes.Key key){
+    public Likes getLike(Likes.Key key) {
         return likesRepository.findLikesByKey(key);
     }
 
