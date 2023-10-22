@@ -13,7 +13,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class Likes implements Serializable{
+public class Likes implements Serializable {
 
     @EmbeddedId
     private Key key;
